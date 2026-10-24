@@ -1,0 +1,847 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/UNtergas/job-tracker/docs/import.schema.json",
+  "title": "Job Tracker import bundle",
+  "description": "One-time / incremental import from AWS-prep into Job Tracker. Every array is optional: a bundle may carry only the objects changed in one step. Objects are upserted by `ref`. A `*Ref` may point to an object in this bundle or one already imported.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "exportedAt",
+    "source"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "exportedAt": {
+      "$ref": "#/$defs/instant"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "aws-prep",
+        "seed"
+      ]
+    },
+    "companies": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/company"
+      }
+    },
+    "jobPostings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/jobPosting"
+      }
+    },
+    "contacts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/contact"
+      }
+    },
+    "applications": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/application"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    },
+    "interviews": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/interview"
+      }
+    },
+    "kbEntries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/kbEntry"
+      }
+    },
+    "starStories": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/starStory"
+      }
+    },
+    "letters": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/letter"
+      }
+    },
+    "cvVersions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/cvVersion"
+      }
+    }
+  },
+  "$defs": {
+    "ref": {
+      "description": "Stable human-readable id, unique per entity type. Prefix by type: co-, jp-, ct-, app-, ev-, iv-, kb-, star-, ltr-, cv-. Never reuse or rename once imported. Keep <title-slug> and <topic> to 3 words max.",
+      "type": "string",
+      "pattern": "^(co|jp|ct|app|ev|iv|kb|star|ltr|cv)-[a-z0-9]+(-[a-z0-9]+)*$",
+      "maxLength": 120
+    },
+    "instant": {
+      "description": "ISO 8601 date-time WITH offset, e.g. 2026-10-24T09:30:00+02:00",
+      "type": "string",
+      "format": "date-time",
+      "pattern": "(Z|[+-]\\d{2}:\\d{2})$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://",
+      "maxLength": 2048
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "gitSha": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{7,40}$"
+    },
+    "text": {
+      "type": "string",
+      "maxLength": 20000
+    },
+    "company": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "name"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "website": {
+          "$ref": "#/$defs/url"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "PRODUCT",
+            "STARTUP",
+            "ESN",
+            "CONSULTING",
+            "AGENCY",
+            "CORPORATE",
+            "PUBLIC",
+            "OTHER"
+          ],
+          "description": "Judgment call. CORPORATE = in-house tech of a non-tech company (retail, bank). CONSULTING = Big4 / strategy-IT consulting."
+        },
+        "city": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Headquarters. Where the job is located goes in jobPosting.location."
+        }
+      }
+    },
+    "jobPosting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "companyRef",
+        "title"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "companyRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "url": {
+          "$ref": "#/$defs/url"
+        },
+        "description": {
+          "$ref": "#/$defs/text",
+          "description": "Full ad text, copied verbatim when available (postings vanish). Absent if only a summary exists."
+        },
+        "contractType": {
+          "type": "string",
+          "enum": [
+            "CDI",
+            "CDD",
+            "FREELANCE",
+            "ALTERNANCE",
+            "INTERNSHIP",
+            "OTHER"
+          ]
+        },
+        "remote": {
+          "type": "string",
+          "enum": [
+            "ONSITE",
+            "HYBRID",
+            "REMOTE"
+          ]
+        },
+        "salaryMinEur": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "salaryMaxEur": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stack": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "maxItems": 30
+        },
+        "postedAt": {
+          "$ref": "#/$defs/date"
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Where this job is (city), not company HQ."
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 5000,
+          "description": "My summary of the posting. Requirements only; process notes go to application.note/events, people go to contacts."
+        }
+      }
+    },
+    "contact": {
+      "description": "Professional contact point only. No phone, no personal email. Message templates live in AWS-prep, not here.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "name",
+        "role"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "companyRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "linkedinUrl": {
+          "$ref": "#/$defs/url"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "RECRUITER",
+            "HIRING_MANAGER",
+            "FOUNDER",
+            "ALUMNI",
+            "REFERRER",
+            "ENGINEER",
+            "OTHER"
+          ]
+        },
+        "outreachStatus": {
+          "type": "string",
+          "enum": [
+            "NOT_CONTACTED",
+            "CONTACTED",
+            "REPLIED",
+            "NO_REPLY",
+            "DECLINED"
+          ]
+        },
+        "lastContactedAt": {
+          "$ref": "#/$defs/date"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Professional context only."
+        }
+      }
+    },
+    "application": {
+      "description": "Current status is NOT stored here: it is derived from the latest event.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "jobPostingRef",
+        "channel"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "jobPostingRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "PORTAL",
+            "COMPANY_SITE",
+            "REFERRAL",
+            "RECRUITER_INBOUND",
+            "RECRUITER_OUTBOUND",
+            "NETWORK",
+            "OTHER"
+          ]
+        },
+        "contactRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "uniqueItems": true,
+          "description": "M:N contacts involved in this application."
+        },
+        "salaryAskEur": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Asked amount, or the low end of an asked range."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "salaryAskMaxEur": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "High end of an asked range. Only with salaryAskEur."
+        }
+      },
+      "dependentRequired": {
+        "salaryAskMaxEur": [
+          "salaryAskEur"
+        ]
+      }
+    },
+    "event": {
+      "description": "Append-only timeline. Has a ref so re-importing does not duplicate it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "type",
+        "at"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "applicationRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "DRAFTED",
+            "APPLIED",
+            "FOLLOWED_UP",
+            "REPLIED",
+            "SCREENING",
+            "INTERVIEW_SCHEDULED",
+            "TECH_TEST",
+            "OFFER",
+            "REJECTED",
+            "GHOSTED",
+            "WITHDRAWN",
+            "ACCEPTED",
+            "DECISION"
+          ]
+        },
+        "at": {
+          "$ref": "#/$defs/instant"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "For DECISION events: what was decided and why."
+        },
+        "atPrecision": {
+          "type": "string",
+          "enum": [
+            "DAY",
+            "MINUTE"
+          ],
+          "default": "MINUTE",
+          "description": "DAY = only the date is known; `at` must then be 00:00 Paris local time and the time is not shown."
+        },
+        "jobPostingRef": {
+          "$ref": "#/$defs/ref",
+          "description": "Only for a DECISION on a posting never applied to. Exactly one of applicationRef / jobPostingRef."
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "applicationRef"
+          ]
+        },
+        {
+          "required": [
+            "jobPostingRef"
+          ]
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "atPrecision": {
+                "const": "DAY"
+              }
+            },
+            "required": [
+              "atPrecision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "at": {
+                "pattern": "T00:00:00(\\.0+)?(Z|[+-]\\d{2}:\\d{2})$",
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "jobPostingRef"
+            ]
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "DECISION"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "interview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "applicationRef",
+        "round",
+        "kind"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "applicationRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "round": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "HR",
+            "TECHNICAL",
+            "LIVE_CODING",
+            "TAKE_HOME",
+            "SYSTEM_DESIGN",
+            "MANAGER",
+            "CULTURE",
+            "OTHER"
+          ]
+        },
+        "at": {
+          "$ref": "#/$defs/instant"
+        },
+        "outcome": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "PASSED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        "contactRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "uniqueItems": true
+        },
+        "starStoryRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "uniqueItems": true,
+          "description": "Stories used in this round."
+        },
+        "notes": {
+          "$ref": "#/$defs/text"
+        },
+        "atPrecision": {
+          "type": "string",
+          "enum": [
+            "DAY",
+            "MINUTE"
+          ],
+          "default": "MINUTE",
+          "description": "DAY = only the date is known; `at` must then be 00:00 Paris local time and the time is not shown."
+        }
+      },
+      "if": {
+        "properties": {
+          "atPrecision": {
+            "const": "DAY"
+          }
+        },
+        "required": [
+          "atPrecision"
+        ]
+      },
+      "then": {
+        "properties": {
+          "at": {
+            "pattern": "T00:00:00(\\.0+)?(Z|[+-]\\d{2}:\\d{2})$",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "kbEntry": {
+      "description": "Knowledge base fact about the user's own experience. Source of evidence for STAR stories.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "kind",
+        "title",
+        "body"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "EXPERIENCE",
+            "PROJECT",
+            "SKILL",
+            "EDUCATION",
+            "ACHIEVEMENT",
+            "METRIC",
+            "OTHER"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "body": {
+          "$ref": "#/$defs/text"
+        },
+        "periodStart": {
+          "$ref": "#/$defs/date"
+        },
+        "periodEnd": {
+          "$ref": "#/$defs/date"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "maxItems": 30
+        },
+        "sourcePath": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Path of the source file in AWS-prep, for traceability."
+        }
+      }
+    },
+    "starStory": {
+      "description": "Reusable across applications. Must cite at least one kbEntry as evidence. Imported stories are always DRAFT; only the user verifies in the tracker UI.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "title",
+        "situation",
+        "task",
+        "action",
+        "result",
+        "evidenceKbRefs"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "situation": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 5000
+        },
+        "result": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000
+        },
+        "evidenceKbRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "applicationRefs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ref"
+          },
+          "uniqueItems": true
+        },
+        "competencies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "maxItems": 15
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "fr",
+            "en"
+          ]
+        }
+      }
+    },
+    "letter": {
+      "description": "Motivation letter actually sent: a PDF (uploaded separately) or plain text pasted in a form.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "applicationRef",
+        "format"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "applicationRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "fr",
+            "en"
+          ]
+        },
+        "pdfPath": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "Path in AWS-prep, used by the upload step."
+        },
+        "pdfSha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "sourceCommit": {
+          "$ref": "#/$defs/gitSha"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/date"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "PDF",
+            "TEXT"
+          ]
+        },
+        "body": {
+          "$ref": "#/$defs/text",
+          "description": "TEXT only. Several form fields → one body, each field under a '## <field label>' heading."
+        },
+        "sourcePath": {
+          "type": "string",
+          "maxLength": 500,
+          "description": "TEXT only. Path of the .txt/.md in AWS-prep."
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 1000
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "PDF"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "required": [
+              "pdfSha256"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "body"
+                  ]
+                },
+                {
+                  "required": [
+                    "sourcePath"
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "format": {
+                "const": "TEXT"
+              }
+            },
+            "required": [
+              "format"
+            ]
+          },
+          "then": {
+            "required": [
+              "body"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "pdfSha256"
+                  ]
+                },
+                {
+                  "required": [
+                    "pdfPath"
+                  ]
+                },
+                {
+                  "required": [
+                    "sourceCommit"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "cvVersion": {
+      "description": "CV PDF actually sent. Append-only. History of the .typ source = AWS-prep git; sourceCommit links them.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "applicationRef",
+        "pdfSha256"
+      ],
+      "properties": {
+        "ref": {
+          "$ref": "#/$defs/ref"
+        },
+        "applicationRef": {
+          "$ref": "#/$defs/ref"
+        },
+        "language": {
+          "type": "string",
+          "enum": [
+            "fr",
+            "en"
+          ]
+        },
+        "pdfPath": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "pdfSha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "sourceCommit": {
+          "$ref": "#/$defs/gitSha"
+        },
+        "sentAt": {
+          "$ref": "#/$defs/date"
+        }
+      }
+    }
+  }
+}

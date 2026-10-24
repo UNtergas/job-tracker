@@ -1,0 +1,157 @@
+{
+  "schemaVersion": 1,
+  "exportedAt": "2026-10-25T10:00:00+02:00",
+  "source": "seed",
+  "companies": [
+    {
+      "ref": "co-acme",
+      "name": "Acme Conseil",
+      "kind": "ESN",
+      "city": "Paris",
+      "website": "https://acme.example"
+    }
+  ],
+  "jobPostings": [
+    {
+      "ref": "jp-acme-java-junior",
+      "companyRef": "co-acme",
+      "title": "Développeur Java Spring junior",
+      "url": "https://acme.example/jobs/42",
+      "description": "Fake JD text for seed data.",
+      "contractType": "CDI",
+      "remote": "HYBRID",
+      "salaryMinEur": 38000,
+      "salaryMaxEur": 42000,
+      "stack": [
+        "Java",
+        "Spring Boot",
+        "PostgreSQL"
+      ],
+      "location": "Paris"
+    },
+    {
+      "ref": "jp-acme-cobol-senior",
+      "companyRef": "co-acme",
+      "title": "Développeur COBOL senior",
+      "summary": "Fake summary: 8 years COBOL required."
+    }
+  ],
+  "contacts": [
+    {
+      "ref": "ct-jane-doe",
+      "name": "Jane Doe",
+      "companyRef": "co-acme",
+      "role": "RECRUITER",
+      "outreachStatus": "REPLIED",
+      "lastContactedAt": "2026-10-02"
+    }
+  ],
+  "applications": [
+    {
+      "ref": "app-acme-java-junior",
+      "jobPostingRef": "jp-acme-java-junior",
+      "channel": "RECRUITER_INBOUND",
+      "contactRefs": [
+        "ct-jane-doe"
+      ],
+      "salaryAskEur": 42000,
+      "salaryAskMaxEur": 44000
+    }
+  ],
+  "events": [
+    {
+      "ref": "ev-acme-java-junior-applied-20261001",
+      "applicationRef": "app-acme-java-junior",
+      "type": "APPLIED",
+      "at": "2026-10-01T00:00:00+02:00",
+      "atPrecision": "DAY"
+    },
+    {
+      "ref": "ev-acme-java-junior-replied-20261002-1400",
+      "applicationRef": "app-acme-java-junior",
+      "type": "REPLIED",
+      "at": "2026-10-02T14:00:00+02:00",
+      "note": "Recruiter proposes HR call."
+    },
+    {
+      "ref": "ev-jp-acme-cobol-senior-decision-20261003",
+      "jobPostingRef": "jp-acme-cobol-senior",
+      "type": "DECISION",
+      "at": "2026-10-03T00:00:00+02:00",
+      "atPrecision": "DAY",
+      "note": "Skipped: senior COBOL, off-target."
+    }
+  ],
+  "interviews": [
+    {
+      "ref": "iv-acme-java-junior-1",
+      "applicationRef": "app-acme-java-junior",
+      "round": 1,
+      "kind": "HR",
+      "at": "2026-10-06T10:00:00+02:00",
+      "outcome": "PASSED",
+      "contactRefs": [
+        "ct-jane-doe"
+      ],
+      "starStoryRefs": [
+        "star-cpu-incident"
+      ]
+    }
+  ],
+  "kbEntries": [
+    {
+      "ref": "kb-fake-cpu-fix",
+      "kind": "ACHIEVEMENT",
+      "title": "Fixed CPU spike in scheduled job",
+      "body": "Fake KB entry for seed data.",
+      "tags": [
+        "node",
+        "performance"
+      ]
+    }
+  ],
+  "starStories": [
+    {
+      "ref": "star-cpu-incident",
+      "title": "CPU incident",
+      "situation": "Fake situation.",
+      "task": "Fake task.",
+      "action": "Fake action.",
+      "result": "Fake result.",
+      "evidenceKbRefs": [
+        "kb-fake-cpu-fix"
+      ],
+      "applicationRefs": [
+        "app-acme-java-junior"
+      ],
+      "competencies": [
+        "debugging",
+        "ownership"
+      ],
+      "language": "fr"
+    }
+  ],
+  "letters": [
+    {
+      "ref": "ltr-acme-java-junior-v1",
+      "applicationRef": "app-acme-java-junior",
+      "format": "TEXT",
+      "language": "fr",
+      "body": "## Motivation\nFake motivation text.\n\n## Pourquoi moi\nFake why-me text.",
+      "sourcePath": "jobs/acme/letter.md",
+      "sentAt": "2026-10-01",
+      "note": "Form had two fields."
+    }
+  ],
+  "cvVersions": [
+    {
+      "ref": "cv-acme-java-junior-v1",
+      "applicationRef": "app-acme-java-junior",
+      "language": "fr",
+      "pdfPath": "cv/out/acme.pdf",
+      "pdfSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "sourceCommit": "abc1234",
+      "sentAt": "2026-10-01"
+    }
+  ]
+}
