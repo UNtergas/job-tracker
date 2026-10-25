@@ -99,7 +99,11 @@ its database.
 - Letters: `format: "PDF"` (PDF fields, uploaded separately) or `format: "TEXT"` (`body`, optional
   `sourcePath`, no PDF fields). A form with several text fields → one TEXT letter, each field under
   a `## <field label>` heading.
-- Backfill only: `sourceCommit` = last commit touching the `.typ` before the APPLIED date;
+- Backfill only: `sourceCommit` = last commit touching the `.typ` **on or before the APPLIED date
+  (up to 23:59:59 Paris local time)**:
+  `TZ=Europe/Paris git log -1 --format=%h --until='<applied date> 23:59:59' -- <file>.typ`
+  (no hard-coded offset: Paris is +02:00 in summer, +01:00 in winter).
+  If no such commit exists, leave `sourceCommit` out; `pdfSha256` still identifies the file.
   `sentAt` = APPLIED date. From now on: commit, compile, hash.
 - PDFs are never embedded. Put `pdfPath` (path in this repo), `pdfSha256` (`sha256sum <file>`)
   and `sourceCommit` (`git rev-parse --short HEAD` of the commit holding the `.typ` source).

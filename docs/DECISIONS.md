@@ -178,6 +178,7 @@ Goals, in order:
 - **JobPosting:** `description` = full ad text when available; new `summary` (my summary) and `location` (job city; `company.city` = HQ).
 - **Company kind:** add `CONSULTING`, `CORPORATE`. **Contact role:** add `FOUNDER`.
 - **Salary range:** `salaryAskEur` (low) + `salaryAskMaxEur` (high).
+- **Backfill `sourceCommit`:** last commit touching the `.typ` up to 23:59:59 Paris on the APPLIED day; none → field left out (no false link; `pdfSha256` still identifies the file).
 - Still `schemaVersion: 1`: nothing imported yet. Next change after the importer exists → bump.
 
 ---
