@@ -181,6 +181,21 @@ Goals, in order:
 - **Backfill `sourceCommit`:** last commit touching the `.typ` up to 23:59:59 Paris on the APPLIED day; none → field left out (no false link; `pdfSha256` still identifies the file).
 - Still `schemaVersion: 1`: nothing imported yet. Next change after the importer exists → bump.
 
+### D21 — AWS-prep leads the data shape; `jobPosting.summary` content (2026-10-26, amends D20)
+- **Decision:** AWS-prep owns the data shape; the tracker adapts. When AWS-prep needs a new field, rule
+  or meaning, the tracker changes its schema, importer and UI to match. AWS-prep never bends or drops
+  data to fit the tracker.
+- **Flow:** AWS-prep sends a handoff note → this repo updates `docs/import.schema.json` (bumps
+  `schemaVersion` if needed) → AWS-prep copies it to `tracker/import.schema.json`.
+- **First change:** `jobPosting.summary` is no longer "requirements only". It always covers, in order:
+  stack, the work in the role, the interview process (steps, who, format; "not stated" if absent),
+  then requirements, contract, place, salary. Process steps that actually happened still go to
+  events/interviews; people to contacts.
+- Description text only, `maxLength` 5000 unchanged (longest real summary: 1,881 chars), so still
+  `schemaVersion: 1` (D20: nothing imported yet).
+- **UI note for P1:** label the field "Summary", never "Requirements".
+- **Reason:** the tracker exists to track what AWS-prep produces; a schema that forces data loss defeats it.
+
 ---
 
 ## 3. Superseded (kept for the interview story)
@@ -196,6 +211,7 @@ Goals, in order:
 | Typst stored in tracker | PDF + commit SHA (D10) | Tracker records what was sent; git records how it changed |
 | `-0000` / invented times | `atPrecision` (D11) | No fake data |
 | fail2ban + public SSH | Tailnet-only SSH (D15) | Nothing public to attack |
+| `summary` = requirements only | Stack, work, interview process, then requirements (D21) | AWS-prep leads the data shape |
 
 ---
 

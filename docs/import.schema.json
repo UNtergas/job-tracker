@@ -233,7 +233,7 @@
         "summary": {
           "type": "string",
           "maxLength": 5000,
-          "description": "My summary of the posting. Requirements only; process notes go to application.note/events, people go to contacts."
+          "description": "My summary of the posting, in this order: stack, the work in the role, the interview process (steps, who, format; 'not stated' if absent, plus what other ads from the same company show), then requirements, contract, place, salary. People go to contacts. Process steps that actually happened go to events/interviews."
         }
       }
     },

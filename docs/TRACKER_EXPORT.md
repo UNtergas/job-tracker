@@ -90,9 +90,12 @@ its database.
 - Contacts: professional data only (name, company, LinkedIn URL, role). No phone, no personal
   email, nothing private in `note`.
 - Message templates stay in AWS-prep; do not export them.
-- Job postings: `description` = full ad text, verbatim, only when you have it. Otherwise use
-  `summary` (requirements only). Interview-process notes go to `application.note` or events;
-  people named in the ad go to `contacts`. `location` = where the job is; `company.city` = HQ.
+- Job postings: `description` = full ad text, verbatim, only when you have it. `summary` = your
+  summary, always in this order: (1) the stack, (2) the actual work in the role, (3) the interview
+  process (steps, who, format; "not stated" if absent, plus what other ads from the same company
+  show), then requirements, contract, place, salary. Process steps that actually happened go to
+  events / interviews; people named in the ad go to `contacts`. `location` = where the job is;
+  `company.city` = HQ.
 - Salary range asked: `salaryAskEur` = low end, `salaryAskMaxEur` = high end.
 - `company.kind` is a judgment call: `CORPORATE` = in-house tech of a non-tech company
   (Carrefour, Decathlon Digital), `CONSULTING` = Big4 / IT consulting (EY), `ESN`, `AGENCY`, `STARTUP`, `PRODUCT`.
